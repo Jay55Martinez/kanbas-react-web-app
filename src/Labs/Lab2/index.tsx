@@ -31,10 +31,14 @@ import ScreenSizeLabel from "./ScreenSizeLabel"
 import BootstrapTables from "./BootstrapTables"
 import BootstrapLists from "./BootstrapLists"
 import BootstrapForms from "./BootstrapForms"
+import BootstrapNavigation from "./BootstrapNavigation"
+import TOC from "./TOC"
 
 export default function Lab2() {
   return (
     <div className="container">
+      <BootstrapNavigation />
+      <TOC />
       <h1 id="asd" className="zxc">I'm white on red</h1>
       <h2>Lab 2 - Cascading Style Sheets</h2>
       <h3>Styling with the STYLE attribute</h3>
