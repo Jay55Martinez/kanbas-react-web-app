@@ -8,7 +8,6 @@ function App() {
   return (
     <HashRouter>
       <div>
-        <Link to="/Labs">Labs</Link> | <Link to="/Labs/Lab1">Lab1</Link> | <Link to="/Kanbas">Kanbas</Link>
         <Routes>
           <Route path="/" element={<Navigate to="/Kanbas" />} />
           <Route path="/Labs/*" element={<Labs />} />
