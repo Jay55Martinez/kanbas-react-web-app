@@ -4,9 +4,14 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { PiNotebookLight } from "react-icons/pi";
 import AssignmentControlButtons from "./AssignmentControlButtons";
 import AssignmentButton from "./AssignmentButtons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useParams } from "react-router";
+import * as db from "../../Database";
 
 export default function AssignmentTable() {
+  const { cid } = useParams();
+  const assignments = db.assignments;
+  const { pathname } = useLocation();
   return (
     <div>
       <AssignmentControls />
@@ -20,18 +25,20 @@ export default function AssignmentTable() {
             <AssignmentControlButtons />
           </div>
           <ul className="wd-lessons list-group rounded-0">
-            {["A1", "A2", "A3"].map((assignment, index) => (
-              <li key={index} className="wd-lesson list-group-item d-flex align-items-center p-3">
-                <Link className="btn w-100 text-start d-flex align-items-center" to="/Kanbas/Courses/1234/Assignments/:aid">
+            {assignments
+              .filter((assignment: any) => assignment.course === cid)
+              .map((assignment: any) => (
+              <li className="wd-lesson list-group-item d-flex align-items-center p-3">
+                <Link className="btn w-100 text-start d-flex align-items-center" to={`${pathname + '/' + assignment._id}`}>
                   <BsGripVertical className="me-2 fs-3" />
                   <PiNotebookLight className="text-success fs-4" />
                   <div className="ms-2 flex-grow-1">
-                    <span className="d-block font-size-1">{assignment}</span>
+                    <span className="d-block font-size-1">{assignment.title}</span>
                     <span className="d-block font-size-small">
                       <span className="text-danger">Multiple Modules</span>
-                      <span className="text-black"> | Not available until May 6 at 12:00 am |</span>
+                      <span className="text-black"> | Not available until {new Date(assignment.available).toLocaleDateString("en-US", { month: "long", day: "numeric" })} |</span>
                     </span>
-                    <span className="d-block font-size-small">Due May 13 at 11:59pm | 100 pts</span>
+                    <span className="d-block font-size-small">Due {new Date(assignment.due).toLocaleDateString("en-US", { month: "long", day: "numeric" })} | {assignment.points} pts</span>
                   </div>
                   <AssignmentButton />
                 </Link>
