@@ -31,6 +31,7 @@ import Square from "./Square";
 import Highlight from "./Highlight";
 import PathParameters from "./PathParameters";
 import AddPathParameters from "./AddPathParameters";
+import Clicks from "./click";
 
 export default function Lab3() {
     console.log('Hello World!');
@@ -71,6 +72,7 @@ export default function Lab3() {
         <Highlight>Highlight this text</Highlight>
         <PathParameters/>
         <AddPathParameters/>
+        <Clicks/>
       </div>
     );
   }
