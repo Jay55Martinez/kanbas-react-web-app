@@ -8,10 +8,11 @@ import { Link, useLocation } from "react-router-dom";
 import { useParams } from "react-router";
 import * as db from "../../Database";
 import { useSelector, useDispatch } from "react-redux";
+import { updateAssignment } from "./reducer";
 
 export default function AssignmentTable() {
   const { cid } = useParams();
-  const assignments = db.assignments;
+  const assignments = useSelector((state: any) => state.assignmentReducer.assignments);
   const { pathname } = useLocation();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   if (currentUser.role === "FACULTY") {
