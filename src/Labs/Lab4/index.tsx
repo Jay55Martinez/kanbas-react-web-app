@@ -10,6 +10,8 @@ import ObjectStateVariable from "./ObjectStateVariable";
 import ArrayStateVariable from "./ArrayStateVariable";
 import ParentStateComponent from "./ParentStateComponent";
 import ReduxExamples from "./ReduxExamples";
+import Acme from "./Acme";
+import Exam from "./Exam";
 
 function sayHello() {
     alert("Hello!");
@@ -31,6 +33,8 @@ export default function Lab4() {
             <ArrayStateVariable />
             <ParentStateComponent />
             <ReduxExamples />
+            <Acme />
+            <Exam />
         </div>
     );
 }
