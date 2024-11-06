@@ -165,27 +165,29 @@ export default function Dashboard(
                         >
                           {course.description}
                         </p>
-                        <button className="btn btn-primary">Go</button>
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            dispatch(Enroll({ _id: new Date().getTime().toString(), user: currentUser._id, course: course._id }));
-                          }}
-                          className="btn btn-success float-end"
-                          id="wd-enroll-click"
-                        >
-                          Enroll
-                        </button>
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            dispatch(unEnroll(course._id));
-                          }}
-                          className="btn btn-danger float-end"
-                          id="wd-unenroll-click"
-                        >
-                          Unenroll
-                        </button>
+                        {enrollments.some(
+                          (enrollment) =>
+                            enrollment.user === currentUser._id &&
+                            enrollment.course === course._id
+                        ) ? (
+                          <button
+                            onClick={() => {
+                              dispatch(unEnroll(course._id));
+                            }}
+                            className="btn btn-danger float-end"
+                            id="wd-unenroll-click"
+                          >
+                            Unenroll
+                          </button>
+                        ) : <button
+                        onClick={() => {
+                          dispatch(Enroll({ _id: 1, user: currentUser._id, course: course._id }));
+                        }}
+                        className="btn btn-success float-end"
+                        id="wd-enroll-click"
+                      >
+                        Enroll
+                      </button>}
                       </div>
                     </Link>
                   </div>
