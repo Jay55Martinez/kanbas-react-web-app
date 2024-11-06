@@ -166,6 +166,26 @@ export default function Dashboard(
                           {course.description}
                         </p>
                         <button className="btn btn-primary">Go</button>
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            dispatch(Enroll({ _id: new Date().getTime().toString(), user: currentUser._id, course: course._id }));
+                          }}
+                          className="btn btn-success float-end"
+                          id="wd-enroll-click"
+                        >
+                          Enroll
+                        </button>
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            dispatch(unEnroll(course._id));
+                          }}
+                          className="btn btn-danger float-end"
+                          id="wd-unenroll-click"
+                        >
+                          Unenroll
+                        </button>
                       </div>
                     </Link>
                   </div>
@@ -176,6 +196,7 @@ export default function Dashboard(
         )}
         <hr />
         <div id="wd-dashboard-courses" className="row">
+        {!showAllCourses && (
           <div className="row row-cols-1 row-cols-md-5 g-4">
             {courses.filter((course) =>
             enrollments.some(
@@ -207,7 +228,7 @@ export default function Dashboard(
                 </div>
               </div>
             ))}
-          </div>
+          </div>)}
         </div>
       </div>
     );
