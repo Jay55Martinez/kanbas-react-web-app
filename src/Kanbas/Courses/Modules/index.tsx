@@ -64,6 +64,7 @@ export default function Modules() {
     </div>
   );
   }
+  // Student view
   else {
     return (
       <div>

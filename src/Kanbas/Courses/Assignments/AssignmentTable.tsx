@@ -8,13 +8,14 @@ import { Link, useLocation } from "react-router-dom";
 import { useParams } from "react-router";
 import * as db from "../../Database";
 import { useSelector, useDispatch } from "react-redux";
-import { updateAssignment } from "./reducer";
+import { updateAssignment, deleteAssignment } from "./reducer";
 
 export default function AssignmentTable() {
   const { cid } = useParams();
   const assignments = useSelector((state: any) => state.assignmentReducer.assignments);
   const { pathname } = useLocation();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const dispatch = useDispatch();
   if (currentUser.role === "FACULTY") {
   return (
       <div>
@@ -46,6 +47,16 @@ export default function AssignmentTable() {
                     </div>
                     <AssignmentButton />
                   </Link>
+                <button 
+                  className="btn btn-danger ms-2" 
+                  onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this assignment?")) {
+                    dispatch(deleteAssignment(assignment._id));
+                  }
+                  }}
+                  >
+                  Delete
+                </button>
                 </li>
               ))}
             </ul>

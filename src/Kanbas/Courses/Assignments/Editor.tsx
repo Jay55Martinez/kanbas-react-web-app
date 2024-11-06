@@ -1,11 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LuCalendarDays } from "react-icons/lu";
 import { useParams } from "react-router";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { updateAssignment } from "./reducer";
-import * as db from "../../Database";
+import { addAssignment, updateAssignment, deleteAssignment } from "./reducer";
 
 export default function AssignmentEditor() {
   const { pathname } = useLocation();
@@ -14,8 +13,19 @@ export default function AssignmentEditor() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const assignments = useSelector((state: any) => state.assignmentReducer.assignments);
-  const assignment = assignments.find((assignment: any) => assignment._id === assignmentId);
-  console.log(assignment);
+
+  const existingAssignment = assignments.find((a: any) => a._id === assignmentId);
+  const defaultAssignment = { "_id": assignmentId, "title": "Empty", "description": "Empty", "course": cid };
+  const usingDefault = !existingAssignment;
+  const [localAssignment, setLocalAssignment] = useState(existingAssignment || defaultAssignment);
+  console.log(localAssignment);
+
+  // Update localAssignment only if the assignment changes
+  useEffect(() => {
+    if (existingAssignment) {
+      setLocalAssignment(existingAssignment);
+    }
+  }, [existingAssignment]);
 
   const handleButtonReturn = () => {
     navigate(pathname.substring(0, pathname.lastIndexOf(assignmentId)));
@@ -28,8 +38,8 @@ export default function AssignmentEditor() {
         <input 
           id="wd-name" 
           className="form-control" 
-          value={assignment.title} 
-          onChange={(e) => dispatch(updateAssignment({ ...assignment, title: e.target.value }))}
+          value={localAssignment.title} 
+          onChange={(e) => setLocalAssignment({ ...localAssignment, title: e.target.value })}
         />
       </div>
       <div className="mb-3">
@@ -37,8 +47,8 @@ export default function AssignmentEditor() {
           id="wd-description"
           className="form-control" 
           rows={5} 
-          value={assignment.description}
-          onChange={(e) => dispatch(updateAssignment({ ...assignment, description: e.target.value }))} 
+          value={localAssignment.description}
+          onChange={(e) => setLocalAssignment({ ...localAssignment, description: e.target.value })} 
         />
       </div>
       <div className="mb-3 row align-items-center">
@@ -50,8 +60,8 @@ export default function AssignmentEditor() {
             id="wd-points" 
             className="form-control" 
             type="number" 
-            value={assignment.points} 
-            onChange={(e) => dispatch(updateAssignment({ ...assignment, points: e.target.value }))}
+            value={localAssignment.points} 
+            onChange={(e) => setLocalAssignment({ ...localAssignment, points: e.target.value })}
           />
         </div>
       </div>
@@ -138,8 +148,8 @@ export default function AssignmentEditor() {
                 id="wd-available-date" 
                 type="datetime-local" 
                 className="form-control" 
-                value={assignment.available}
-                onChange={(e) => dispatch(updateAssignment({ ...assignment, available: e.target.value }))} 
+                value={localAssignment.available}
+                onChange={(e) => setLocalAssignment({ ...localAssignment, available: e.target.value })} 
               />
               <button className="btn btn-light border"><LuCalendarDays /></button>
             </div>
@@ -151,18 +161,34 @@ export default function AssignmentEditor() {
                 id="wd-until-date" 
                 type="datetime-local" 
                 className="form-control" 
-                value={assignment.due}
-                onChange={(e) => dispatch(updateAssignment({ ...assignment, description: e.target.value }))} />
+                value={localAssignment.due}
+                onChange={(e) => setLocalAssignment({ ...localAssignment, due: e.target.value })} />
               <button className="btn btn-light border"><LuCalendarDays /></button>
             </div>
           </div>
           </div>
         </div>
         <div className="d-flex justify-content-end p-3">
-          <button id="wd-cancel" className="btn btn-secondary me-2" onClick={handleButtonReturn}>Cancel</button>
+          <button id="wd-cancel" className="btn btn-secondary me-2" 
+          onClick={() => {
+            if (usingDefault) {
+              dispatch(deleteAssignment(assignmentId));
+            }
+            else {
+            setLocalAssignment({ ...localAssignment });
+            }
+            handleButtonReturn()}}>
+              Cancel
+            </button>
           <button id="wd-save" className="btn btn-danger" 
              onClick={() => {
-              dispatch(updateAssignment(assignment));
+              if (!usingDefault) {
+              dispatch(updateAssignment(localAssignment));
+              }
+              else {
+              console.log("here");
+              dispatch(addAssignment(localAssignment));
+              }
               handleButtonReturn();}}
             >
               Save
