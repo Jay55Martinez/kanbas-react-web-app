@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import * as db from "./Database";
 import { Enroll, unEnroll } from "./reducer";
-
-
 
 export default function Dashboard(
   { courses, course, setCourse, addNewCourse,
@@ -14,7 +11,6 @@ export default function Dashboard(
     updateCourse: () => void; })
    {  
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const { enrollments } = db;
   const dispatch = useDispatch();
   const [showAllCourses, setShowAllCourses] = useState(false);
 
@@ -78,13 +74,7 @@ export default function Dashboard(
         <hr />
         <div id="wd-dashboard-courses" className="row">
           <div className="row row-cols-1 row-cols-md-5 g-4">
-            {courses.filter((course) =>
-            enrollments.some(
-            (enrollment) =>
-              enrollment.user === currentUser._id &&
-              enrollment.course === course._id
-            ))
-            .map((course) => (
+              {courses.map((course) => (
               <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
                 <div className="card rounded-3 overflow-hidden">
                   <Link
@@ -165,7 +155,8 @@ export default function Dashboard(
                         >
                           {course.description}
                         </p>
-                        {enrollments.some(
+                        
+                        {/* {enrollments.some(
                           (enrollment) =>
                             enrollment.user === currentUser._id &&
                             enrollment.course === course._id
@@ -187,7 +178,7 @@ export default function Dashboard(
                         id="wd-enroll-click"
                       >
                         Enroll
-                      </button>}
+                      </button>} */}
                       </div>
                     </Link>
                   </div>
@@ -200,13 +191,7 @@ export default function Dashboard(
         <div id="wd-dashboard-courses" className="row">
         {!showAllCourses && (
           <div className="row row-cols-1 row-cols-md-5 g-4">
-            {courses.filter((course) =>
-            enrollments.some(
-            (enrollment) =>
-              enrollment.user === currentUser._id &&
-              enrollment.course === course._id
-            ))
-            .map((course) => (
+            {courses.map((course) => (
               <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
                 <div className="card rounded-3 overflow-hidden">
                   <Link
