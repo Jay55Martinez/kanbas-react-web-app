@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Enroll, unEnroll } from "./reducer";
+import { Enroll, unEnroll, setEnrollments } from "./reducer";
+import * as enrollmentClient from "./client"
+import * as courseClient from "./Courses/client";
 
 export default function Dashboard(
   { courses, course, setCourse, addNewCourse,
@@ -10,11 +12,40 @@ export default function Dashboard(
     addNewCourse: () => void; deleteCourse: (course: any) => void;
     updateCourse: () => void; })
    {  
+  
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
   const dispatch = useDispatch();
   const [showAllCourses, setShowAllCourses] = useState(false);
+  const [ allCourses, setAllCourses ] = useState<any[]>([]);
+  const fetchEnrollments = async () => {
+    const enrollments = await enrollmentClient.fetchAllEnrollments();
+    dispatch(setEnrollments(enrollments));
+  };
 
-  console.log(currentUser);
+  const removeEnrollment = async (enrollmentId: string) => {
+    await enrollmentClient.deleteEnrollment(enrollmentId);
+    dispatch(unEnroll(enrollmentId));
+  };
+
+  const addEnrollment = async (enrollment: any) => {
+    await enrollmentClient.addEnrollment(enrollment);
+    dispatch(Enroll(enrollment));
+  };
+
+  const fetchAllCourses = async () => {
+    const courses = await courseClient.fetchAllCourses();
+    setAllCourses(courses);
+  }
+
+  useEffect(() => {
+    fetchAllCourses();
+  }, []);
+
+  useEffect(() => {
+    fetchEnrollments();
+  }, []);
+
   if (currentUser.role === "FACULTY") {
     return (
       <div id="wd-dashboard">
@@ -137,13 +168,9 @@ export default function Dashboard(
         {showAllCourses && (
           <div id="wd-all-courses" className="row mt-3">
             <div className="row row-cols-1 row-cols-md-5 g-4">
-              {courses.map((course) => (
+              {allCourses.map((course) => (
                 <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
                   <div className="card rounded-3 overflow-hidden">
-                    <Link
-                      className="wd-dashboard-course-link text-decoration-none text-dark"
-                      to={`/Kanbas/Courses/${course._id}/Home`}
-                    >
                       <img src="/images/reacts.png" width="100%" height={160} />
                       <div className="card-body">
                         <h5 className="wd-dashboard-course-title card-title">
@@ -155,32 +182,37 @@ export default function Dashboard(
                         >
                           {course.description}
                         </p>
-                        
-                        {/* {enrollments.some(
-                          (enrollment) =>
+                        {enrollments.some(
+                          (enrollment: any) =>
                             enrollment.user === currentUser._id &&
                             enrollment.course === course._id
                         ) ? (
+                          <div>
+                          <Link to={`/Kanbas/Courses/${course._id}/Home`} className="btn btn-primary">Go</Link>
                           <button
                             onClick={() => {
-                              dispatch(unEnroll(course._id));
+                            const enrollment = enrollments.find(
+                              (enrollment: any) =>
+                                enrollment.user === currentUser._id && enrollment.course === course._id
+                            );
+                            removeEnrollment(enrollment._id);
                             }}
                             className="btn btn-danger float-end"
                             id="wd-unenroll-click"
                           >
                             Unenroll
                           </button>
+                          </div>
                         ) : <button
                         onClick={() => {
-                          dispatch(Enroll({ _id: 1, user: currentUser._id, course: course._id }));
+                          addEnrollment({ _id: 1, user: currentUser._id, course: course._id });
                         }}
                         className="btn btn-success float-end"
                         id="wd-enroll-click"
                       >
                         Enroll
-                      </button>} */}
+                      </button>}
                       </div>
-                    </Link>
                   </div>
                 </div>
               ))}
@@ -191,13 +223,14 @@ export default function Dashboard(
         <div id="wd-dashboard-courses" className="row">
         {!showAllCourses && (
           <div className="row row-cols-1 row-cols-md-5 g-4">
-            {courses.map((course) => (
+            {allCourses.filter((course) =>
+                enrollments.some(
+                (enrollment :any) =>
+                  enrollment.user === currentUser._id &&
+                  enrollment.course === course._id
+                )).map((course) => (
               <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
                 <div className="card rounded-3 overflow-hidden">
-                  <Link
-                    className="wd-dashboard-course-link text-decoration-none text-dark"
-                    to={`/Kanbas/Courses/${course._id}/Home`}
-                  >
                     <img src="/images/reacts.png" width="100%" height={160} />
                     <div className="card-body">
                       <h5 className="wd-dashboard-course-title card-title">
@@ -209,9 +242,8 @@ export default function Dashboard(
                       >
                         {course.description}
                       </p>
-                      <button className="btn btn-primary">Go</button>
+                      <Link to={`/Kanbas/Courses/${course._id}/Home`} className="btn btn-primary">Go</Link>
                     </div>
-                  </Link>
                 </div>
               </div>
             ))}

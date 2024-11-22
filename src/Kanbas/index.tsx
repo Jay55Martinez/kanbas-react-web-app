@@ -32,14 +32,17 @@ export default function Kanbas() {
     _id: "1234", name: "New Course", number: "New Number",
     startDate: "2023-09-10", endDate: "2023-12-15", description: "New Description",
   });
+
   const addNewCourse = async () => {
     const newCourse = await userClient.createCourse(course);
     setCourses([ ...courses, newCourse ]);
   };
+
   const deleteCourse = async (courseId: any) => {
     const status = await courseClient.deleteCourse(courseId);
     setCourses(courses.filter((course) => course._id !== courseId));
   };
+
   const updateCourse = async () => {
     await courseClient.updateCourse(course);
     setCourses(
@@ -52,6 +55,7 @@ export default function Kanbas() {
       })
     );
   };
+  
   return (
     <Session>
       <div id="wd-kanbas">

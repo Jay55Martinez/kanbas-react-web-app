@@ -4,7 +4,6 @@ import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { BsGripVertical } from "react-icons/bs";
 import { useParams } from "react-router";
-import * as db from "../../Database";
 import { addModule, editModule, updateModule, deleteModule, setModules }
   from "./reducer";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,7 +14,6 @@ export default function Modules() {
   const { cid } = useParams();
   const [moduleName, setModuleName] = useState("");
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const { enrollments } = db;
   const { modules } = useSelector((state: any) => state.modulesReducer);
   const dispatch = useDispatch();
 
@@ -28,6 +26,7 @@ export default function Modules() {
     const modules = await coursesClient.findModulesForCourse(cid as string);
     dispatch(setModules(modules));
   };
+
   useEffect(() => {
     fetchModules();
   }, []);
