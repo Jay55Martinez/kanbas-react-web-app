@@ -5,6 +5,7 @@ import { useParams } from "react-router";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addAssignment, updateAssignment, deleteAssignment } from "./reducer";
+import * as AssignmentClient from "./client";
 
 export default function AssignmentEditor() {
   const { pathname } = useLocation();
@@ -18,7 +19,16 @@ export default function AssignmentEditor() {
   const defaultAssignment = { "_id": assignmentId, "title": "Empty", "description": "Empty", "course": cid };
   const usingDefault = !existingAssignment;
   const [localAssignment, setLocalAssignment] = useState(existingAssignment || defaultAssignment);
-  console.log(localAssignment);
+  
+  const handleUpdateAssignment = async (id: string, assignment: any) => {
+    await AssignmentClient.updateAssignment(id, assignment);
+    dispatch(updateAssignment(assignment));
+  };
+
+  const handleAddAssignment = async (id: string, assignment: any) => {
+    await AssignmentClient.addAssignment(id, assignment);
+    dispatch(addAssignment(assignment));
+  };
 
   // Update localAssignment only if the assignment changes
   useEffect(() => {
@@ -183,11 +193,10 @@ export default function AssignmentEditor() {
           <button id="wd-save" className="btn btn-danger" 
              onClick={() => {
               if (!usingDefault) {
-              dispatch(updateAssignment(localAssignment));
+              handleUpdateAssignment(assignmentId, localAssignment);
               }
               else {
-              console.log("here");
-              dispatch(addAssignment(localAssignment));
+              handleAddAssignment(assignmentId, localAssignment);
               }
               handleButtonReturn();}}
             >
