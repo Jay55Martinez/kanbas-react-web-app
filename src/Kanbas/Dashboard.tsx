@@ -223,12 +223,7 @@ export default function Dashboard(
         <div id="wd-dashboard-courses" className="row">
         {!showAllCourses && (
           <div className="row row-cols-1 row-cols-md-5 g-4">
-            {allCourses.filter((course) =>
-                enrollments.some(
-                (enrollment :any) =>
-                  enrollment.user === currentUser._id &&
-                  enrollment.course === course._id
-                )).map((course) => (
+            {courses.map((course) => (
               <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
                 <div className="card rounded-3 overflow-hidden">
                     <img src="/images/reacts.png" width="100%" height={160} />
