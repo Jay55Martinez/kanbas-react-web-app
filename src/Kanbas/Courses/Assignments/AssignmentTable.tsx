@@ -35,7 +35,7 @@ export default function AssignmentTable() {
 
   return (
     <div>
-      <AssignmentControls />
+       {currentUser.role === "FACULTY" && (<AssignmentControls />)}
       <br />
       <ul id="wd-modules" className="list-group rounded-0">
         <li className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">

@@ -7,10 +7,13 @@ import * as courseClient from "./Courses/client";
 
 export default function Dashboard(
   { courses, course, setCourse, addNewCourse,
-    deleteCourse, updateCourse }: {
+    deleteCourse, updateCourse, enrolling, setEnrolling,
+    updateEnrollment }: {
     courses: any[]; course: any; setCourse: (course: any) => void;
     addNewCourse: () => void; deleteCourse: (course: any) => void;
-    updateCourse: () => void; })
+    updateCourse: () => void; enrolling: boolean;
+    setEnrolling: (enrolling: boolean) => void;
+    updateEnrollment: (courseId: string, enrolled: boolean) => void})
    {  
   
   const { currentUser } = useSelector((state: any) => state.accountReducer);
@@ -159,16 +162,12 @@ export default function Dashboard(
     return (
       <div id="wd-dashboard">
         <h1 id="wd-dashboard-title">Dashboard</h1>
-        <button
-          className="btn btn-info float-end"
-          onClick={() => setShowAllCourses(!showAllCourses)}
-        >
-          Enrollment
+        <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+          {enrolling ? "My Courses" : "All Courses"}
         </button>
-        {showAllCourses && (
           <div id="wd-all-courses" className="row mt-3">
             <div className="row row-cols-1 row-cols-md-5 g-4">
-              {allCourses.map((course) => (
+              {courses.map((course) => (
                 <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
                   <div className="card rounded-3 overflow-hidden">
                       <img src="/images/reacts.png" width="100%" height={160} />
@@ -182,68 +181,30 @@ export default function Dashboard(
                         >
                           {course.description}
                         </p>
-                        {enrollments.some(
-                          (enrollment: any) =>
-                            enrollment.user === currentUser._id &&
-                            enrollment.course === course._id
-                        ) ? (
-                          <div>
-                          <Link to={`/Kanbas/Courses/${course._id}/Home`} className="btn btn-primary">Go</Link>
-                          <button
-                            onClick={() => {
-                            const enrollment = enrollments.find(
-                              (enrollment: any) =>
-                                enrollment.user === currentUser._id && enrollment.course === course._id
-                            );
-                            removeEnrollment(enrollment._id);
+                        {enrolling && (
+                          <button 
+                            onClick={(event) => {
+                              event.preventDefault();
+                              updateEnrollment(course._id, !course.enrolled);
                             }}
-                            className="btn btn-danger float-end"
-                            id="wd-unenroll-click"
-                          >
-                            Unenroll
+                            className={`btn ${ course.enrolled ? "btn-danger" : "btn-success" } float-end`} >
+                            {course.enrolled ? "Unenroll" : "Enroll"}
                           </button>
-                          </div>
-                        ) : <button
-                        onClick={() => {
-                          addEnrollment({ _id: 1, user: currentUser._id, course: course._id });
-                        }}
-                        className="btn btn-success float-end"
-                        id="wd-enroll-click"
-                      >
-                        Enroll
-                      </button>}
+                        )}
+                        {!enrolling && (<Link
+                          className="btn btn-success text-dark"
+                          to={`/Kanbas/Courses/${course._id}/Home`}
+                          >
+                            Go
+                          </Link>
+                        )}
                       </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        )}
         <hr />
-        <div id="wd-dashboard-courses" className="row">
-        {!showAllCourses && (
-          <div className="row row-cols-1 row-cols-md-5 g-4">
-            {courses.map((course) => (
-              <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
-                <div className="card rounded-3 overflow-hidden">
-                    <img src="/images/reacts.png" width="100%" height={160} />
-                    <div className="card-body">
-                      <h5 className="wd-dashboard-course-title card-title">
-                        {course.name}
-                      </h5>
-                      <p
-                        className="wd-dashboard-course-title card-text overflow-y-hidden"
-                        style={{ maxHeight: 100 }}
-                      >
-                        {course.description}
-                      </p>
-                      <Link to={`/Kanbas/Courses/${course._id}/Home`} className="btn btn-primary">Go</Link>
-                    </div>
-                </div>
-              </div>
-            ))}
-          </div>)}
-        </div>
       </div>
     );
   }
